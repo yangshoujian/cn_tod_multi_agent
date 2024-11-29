@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问答机器人</title>
+    <style>
+        body {
+            background-color: #b3d1ff; /* 淡蓝色 */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .chatbox {
+            background-color: #ffffcc; /* 淡黄色 */
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 400px;
+            overflow-y: scroll;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .user {
+            color: blue;
+        }
+        .bot {
+            color: green;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chatbox" id="chatbox">
+    <div class="message bot">机器人: 你好</div>
+</div>
+<input type="text" id="question" placeholder="请输入您的问题">
+<button onclick="sendQuestion()">发送</button>
+
+<script>
+    async function sendQuestion() {
+        const questionInput = document.getElementById('question');
+        const question = questionInput.value;
+
+        if (!question) return;
+
+        // 显示用户问题
+        const chatbox = document.getElementById('chatbox');
+        chatbox.innerHTML += `<div class="message user">用户: ${question}</div>`;
+        questionInput.value = '';
+
+        // 调用后端
+        const response = await fetch('http://localhost:5000/ask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ question })
+        });
+
+        const data = await response.json();
+        chatbox.innerHTML += `<div class="message bot">${data.response}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight; // 滚动到最底部
+    }
+</script>
+
+</body>
+</html>

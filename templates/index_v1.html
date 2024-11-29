@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>货车宝机器人</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #chat { border: 1px solid #ccc; padding: 10px; width: 300px; height: 300px; overflow-y: scroll; }
+        #user-input { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>货车宝机器人</h1>
+    <div id="chat"></div>
+    <input type="text" id="user-input" placeholder="输入你的消息..."/>
+    <button id="send-button">发送</button>
+
+    <script>
+        const chatDiv = document.getElementById('chat');
+        const input = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        sendButton.addEventListener('click', () => {
+            const userMessage = input.value;
+            if (userMessage) {
+                // 显示用户消息
+                chatDiv.innerHTML += `<div>User: ${userMessage}</div>`;
+
+                // 发送消息给后端
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                }).then(response => response.json())
+                  .then(data => {
+                      // 显示回复
+                      chatDiv.innerHTML += `<div>Bot: ${data.response}</div>`;
+                      chatDiv.scrollTop = chatDiv.scrollHeight; // 自动滚动到底部
+                  });
+
+                // 清空输入框
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
